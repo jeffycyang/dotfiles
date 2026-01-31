@@ -2,18 +2,18 @@
 
 Personal dotfiles and setup script for a fresh macOS installation on Apple Silicon Macs.
 
-**No Homebrew required!**
-
 ## What Gets Installed
 
 | Tool | Description |
 |------|-------------|
+| **Homebrew** | Package manager (used only for pyenv) |
 | **iTerm2** | Better terminal for macOS |
 | **Oh My Zsh** | Zsh framework with themes and plugins |
 | **agnoster theme** | Powerline-style prompt (requires Nerd Font) |
 | **zsh-syntax-highlighting** | Syntax highlighting for commands |
 | **zsh-autosuggestions** | Fish-like autosuggestions |
 | **NVM** | Node.js version manager |
+| **Pyenv** | Python version manager |
 | **MesloLGS Nerd Font** | Powerline-compatible font |
 | **Git** | Via Xcode Command Line Tools |
 
@@ -58,11 +58,17 @@ nvm install --lts
 
 ### Step 6: Install Python
 
-Download Python from [python.org/downloads](https://www.python.org/downloads/):
+```bash
+pyenv install 3.12
+pyenv global 3.12
+```
 
-1. Download the **macOS 64-bit universal2 installer**
-2. Run the installer
-3. Verify with: `python3 --version`
+Verify with:
+
+```bash
+python --version
+node --version
+```
 
 ## Files
 
@@ -85,11 +91,7 @@ cd MacOS
 ./setup.sh
 ```
 
-The script will backup existing dotfiles before overwriting.
-
-## Customization
-
-Add your personal aliases, environment variables, and other customizations to the bottom of `~/.zshrc` in the "Custom Configuration" section.
+The script is idempotent — it will skip anything already installed and backup existing dotfiles before overwriting.
 
 ## Uninstalling
 
@@ -104,29 +106,17 @@ chmod +x uninstall.sh
 This removes:
 - iTerm2
 - Oh My Zsh and plugins
-- NVM
+- NVM and pyenv
 - Nerd Fonts
 - Restores your original .zshrc and .gitconfig from backups (if available)
 
 This does NOT remove:
+- Homebrew (other tools may depend on it)
 - Xcode Command Line Tools (other apps depend on it)
-- Python (if installed from python.org)
 
-## Why No Homebrew?
+## Customization
 
-This setup avoids Homebrew by:
-
-- Using **Xcode Command Line Tools** for Git
-- Installing **Oh My Zsh** and **NVM** via their official curl scripts
-- Downloading **iTerm2** directly from iterm2.com
-- Using **python.org installers** instead of pyenv
-- Downloading **Nerd Fonts** directly from GitHub
-
-If you later decide you want Homebrew:
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
+Add your personal aliases, environment variables, and other customizations to the bottom of `~/.zshrc` in the "Custom Configuration" section.
 
 ## Troubleshooting
 
@@ -134,12 +124,20 @@ If you later decide you want Homebrew:
 
 Make sure you set iTerm2's font to **MesloLGS Nerd Font** (Step 3 above).
 
-### `nvm: command not found`
+### `nvm: command not found` or `pyenv: command not found`
 
 Restart your terminal or run:
 
 ```bash
 source ~/.zshrc
+```
+
+### `pyenv install` fails with build errors
+
+Make sure Homebrew installed the build dependencies:
+
+```bash
+brew install openssl readline sqlite3 xz zlib tcl-tk
 ```
 
 ### Git asks for credentials every time

@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 # Dotfiles setup script for macOS (Apple Silicon M1-M4)
-# No Homebrew required!
+# Uses Homebrew only for pyenv (Python version manager)
 #
 # Run: chmod +x setup.sh && ./setup.sh
 #
 
 set -e
 
-echo "🚀 Starting macOS setup for Apple Silicon (no Homebrew)..."
+echo "🚀 Starting macOS setup for Apple Silicon..."
 echo ""
 
 # ------------------------------------------------------------------------------
@@ -39,6 +39,19 @@ fi
 echo "✅ Xcode Command Line Tools installed (includes Git)"
 
 # ------------------------------------------------------------------------------
+# Homebrew (for pyenv only)
+# ------------------------------------------------------------------------------
+if ! command -v brew &>/dev/null; then
+    echo "🍺 Installing Homebrew (needed for pyenv)..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Ensure Homebrew is in PATH for Apple Silicon
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+echo "✅ Homebrew installed"
+
+# ------------------------------------------------------------------------------
 # iTerm2
 # ------------------------------------------------------------------------------
 if [ ! -d "/Applications/iTerm.app" ]; then
@@ -58,6 +71,8 @@ fi
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "🐚 Installing Oh My Zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+else
+    echo "✅ Oh My Zsh already installed"
 fi
 
 # ------------------------------------------------------------------------------
@@ -68,11 +83,15 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
     echo "📦 Installing zsh-syntax-highlighting..."
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+else
+    echo "✅ zsh-syntax-highlighting already installed"
 fi
 
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
     echo "📦 Installing zsh-autosuggestions..."
     git clone https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+else
+    echo "✅ zsh-autosuggestions already installed"
 fi
 
 # ------------------------------------------------------------------------------
@@ -88,6 +107,8 @@ if [ ! -f "$FONT_DIR/$FONT_NAME" ]; then
     curl -fsSL -o "$FONT_DIR/MesloLGSNerdFont-Italic.ttf" "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Meslo/S/Italic/MesloLGSNerdFont-Italic.ttf"
     curl -fsSL -o "$FONT_DIR/MesloLGSNerdFont-BoldItalic.ttf" "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Meslo/S/Bold-Italic/MesloLGSNerdFont-BoldItalic.ttf"
     echo "✅ Fonts installed to ~/Library/Fonts"
+else
+    echo "✅ Nerd Fonts already installed"
 fi
 
 # ------------------------------------------------------------------------------
@@ -96,6 +117,18 @@ fi
 if [ ! -d "$HOME/.nvm" ]; then
     echo "📦 Installing NVM..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+else
+    echo "✅ NVM already installed"
+fi
+
+# ------------------------------------------------------------------------------
+# Pyenv (Python Version Manager) via Homebrew
+# ------------------------------------------------------------------------------
+if ! command -v pyenv &>/dev/null; then
+    echo "🐍 Installing pyenv and build dependencies..."
+    brew install pyenv openssl readline sqlite3 xz zlib tcl-tk
+else
+    echo "✅ pyenv already installed"
 fi
 
 # ------------------------------------------------------------------------------
@@ -124,23 +157,6 @@ git config --global user.email "$GIT_EMAIL"
 echo "   Configured Git as: $GIT_NAME <$GIT_EMAIL>"
 
 # ------------------------------------------------------------------------------
-# Python reminder
-# ------------------------------------------------------------------------------
-echo ""
-echo "🐍 Python Installation"
-echo "   This script does NOT install Python automatically."
-echo "   Please download and install Python from: https://www.python.org/downloads/"
-echo ""
-echo "   Recommended: Download the 'macOS 64-bit universal2 installer'"
-echo "   This works natively on Apple Silicon."
-
-# Check if Python 3 is available
-if command -v python3 &>/dev/null; then
-    PYTHON_VERSION=$(python3 --version 2>&1)
-    echo "   Currently installed: $PYTHON_VERSION"
-fi
-
-# ------------------------------------------------------------------------------
 # Done
 # ------------------------------------------------------------------------------
 echo ""
@@ -160,5 +176,7 @@ echo ""
 echo "  4. Install Node.js:"
 echo "     nvm install --lts"
 echo ""
-echo "  5. Install Python from https://www.python.org/downloads/"
+echo "  5. Install Python:"
+echo "     pyenv install 3.12"
+echo "     pyenv global 3.12"
 echo ""

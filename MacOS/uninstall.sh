@@ -12,13 +12,15 @@ echo "This will remove:"
 echo "  - iTerm2"
 echo "  - Oh My Zsh (and plugins)"
 echo "  - NVM"
+echo "  - Pyenv"
 echo "  - MesloLGS Nerd Fonts"
 echo "  - .zshrc and .gitconfig (restores backups if available)"
 echo ""
 echo "This will NOT remove:"
+echo "  - Homebrew (other tools may depend on it)"
 echo "  - Xcode Command Line Tools (other apps may depend on it)"
-echo "  - Python (if you installed it from python.org)"
 echo "  - Any Node.js versions installed via NVM"
+echo "  - Any Python versions installed via pyenv"
 echo ""
 
 read -p "Are you sure you want to continue? (y/N): " CONFIRM
@@ -61,6 +63,27 @@ if [ -d "$HOME/.nvm" ]; then
     echo "   ⚠️  Note: Any Node.js versions installed via NVM are now gone"
 else
     echo "⏭️  NVM not found, skipping"
+fi
+
+# ------------------------------------------------------------------------------
+# Remove Pyenv
+# ------------------------------------------------------------------------------
+if [ -d "$HOME/.pyenv" ]; then
+    echo "🗑️  Removing pyenv..."
+    rm -rf "$HOME/.pyenv"
+    echo "   Removed ~/.pyenv"
+    echo "   ⚠️  Note: Any Python versions installed via pyenv are now gone"
+else
+    echo "⏭️  pyenv not found, skipping"
+fi
+
+# Optionally uninstall pyenv from Homebrew
+if command -v brew &>/dev/null && brew list pyenv &>/dev/null; then
+    read -p "🍺 Uninstall pyenv from Homebrew? (y/N): " UNINSTALL_PYENV
+    if [[ "$UNINSTALL_PYENV" =~ ^[Yy]$ ]]; then
+        brew uninstall pyenv
+        echo "   Removed pyenv from Homebrew"
+    fi
 fi
 
 # ------------------------------------------------------------------------------
@@ -141,6 +164,9 @@ echo ""
 echo "Next steps:"
 echo "  1. Restart your terminal"
 echo "  2. You're back to the default macOS Terminal/zsh setup"
+echo ""
+echo "To completely remove Homebrew (optional):"
+echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)\""
 echo ""
 echo "To reinstall, run: ./setup.sh"
 echo ""

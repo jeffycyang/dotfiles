@@ -18,6 +18,11 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # ------------------------------------------------------------------------------
+# Homebrew (Apple Silicon)
+# ------------------------------------------------------------------------------
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# ------------------------------------------------------------------------------
 # NVM (Node Version Manager)
 # ------------------------------------------------------------------------------
 export NVM_DIR="$HOME/.nvm"
@@ -25,11 +30,11 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # ------------------------------------------------------------------------------
-# Python (python.org installer)
+# Pyenv (Python Version Manager)
 # ------------------------------------------------------------------------------
-# The python.org installer adds Python to /usr/local/bin (Intel) or
-# /Library/Frameworks/Python.framework/Versions/X.Y/bin (Universal)
-# Both should be in PATH by default after installation.
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
 # ------------------------------------------------------------------------------
 # PATH additions
